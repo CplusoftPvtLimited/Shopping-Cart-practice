@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shoes_app/view/screens/cart_food.dart';
 import 'package:shoes_app/view/screens/details.dart';
+
+import '../../controller/cart_controller.dart';
+import '../../model/cart_model.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -13,12 +18,44 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openDrawer() {
     _scaffoldKey.currentState?.openDrawer();
   }
-  List<String> images = [  
-    "assets/seven.jpeg",  
-    "assets/eight.jpeg",  
-    "assets/food.webp",  
-    "assets/six.jpeg",
-  ];  
+
+  //
+   final List<Map<String, dynamic>> gridMap = [
+    {
+      "title": 'Chicken',
+      "price": "100",
+      "images":
+          "assets/seven.jpeg",
+    },
+    {
+      "title": 'Salad',
+      "price": "150",
+      "images":
+          "assets/eight.jpeg", 
+    },
+    {
+      "title": 'Pasta',
+      "price": "200",
+      "images":
+          "assets/food.webp" ,
+    },
+    {
+      "title": 'Rice',
+      "price": "300",
+      "images":
+          "assets/six.jpeg",
+    },
+   
+  ];
+  //  
+
+    List<Product> getProducts() {
+    List<Product> _products = [];
+
+    _products = gridMap.map((e) => Product.fromMap(e)).toList();
+
+    return _products;
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +104,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                
-                 const Icon(Icons.notifications_none_outlined,
-                  size: 32,
-                  ),
+                 InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>CartFood()));
+                  },
+                   child: const Icon(Icons.card_travel_rounded,
+                    size: 32,
+                    ),
+                 ),
                 ],
               ),
               SizedBox(height: 20,),
@@ -105,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                     
                   child: GridView.builder(  
-                    itemCount: images.length,  
+                    itemCount: gridMap.length,  
                     gridDelegate:const SliverGridDelegateWithFixedCrossAxisCount(  
                   crossAxisCount: 2,  
                   crossAxisSpacing: 2.0,  
@@ -113,35 +155,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisExtent: 250
                     ),  
                     itemBuilder: (BuildContext context, int index){  
-                      return InkWell(
-                        onTap: () {
-                           Navigator.push(  
-                          context,  
-                          MaterialPageRoute(builder: (context) => ItemDetails()),  
-                          ); 
-                        },
-                        child: Container(
-                          //color: Colors.amber,
-                          //height: 300,
-                          //padding: EdgeInsets.all(0),
-                          child: Column(
-                            children: [
-                              Container(
-                                color: Colors.green,
-                                
-                                child: Image.asset(images[index],fit: BoxFit.cover,height: 150,width: 150,),),
-                              Text('Original Sushi',style: TextStyle(fontSize: 22,),),
-                              SizedBox(height: 2,),
-                             const Row(
-                                children: [
-                                SizedBox(width: 35,),
-                                Text("'\$100",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                                SizedBox(width: 35,),
-                                Icon(Icons.shopping_cart_outlined),
-                                ],
-                              ),
-                            ],
-                          ),
+                      return Container(
+                        //color: Colors.amber,
+                        //height: 300,
+                        //padding: EdgeInsets.all(0),
+                        child: Column(
+                          children: [
+                            Container(
+                              color: Colors.green,
+                              
+                              child: Image.asset("${gridMap.elementAt(index)['images']}",fit: BoxFit.cover,height: 150,width: 150,),),
+                            Text(getProducts()[index].title,style: TextStyle(fontSize: 22,),),
+                            SizedBox(height: 2,),
+                            Row(
+                              children: [
+                              SizedBox(width: 35,),
+                              Text(getProducts()[index].price.toString(),style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                              SizedBox(width: 35,),
+                              InkWell(
+                                onTap: (){
+                                  
+                                  Provider.of<CartController>(context,
+                                                    listen: false)
+                                                    .addToCart(
+                                                    getProducts()[index]);
+                                  
+                                },
+                                child: Icon(Icons.shopping_cart_outlined),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       );  
                     },  
@@ -178,6 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Icon(Icons.settings),
                 title: Text('Settings'),
                 onTap: () {
+
                   // Handle navigation to the settings page
                 },
               ),

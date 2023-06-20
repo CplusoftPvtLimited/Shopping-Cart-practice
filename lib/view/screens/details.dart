@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shoes_app/view/screens/cart_food.dart';
 
-import 'cart_food.dart';
 
 class ItemDetails extends StatefulWidget {
   const ItemDetails({super.key});

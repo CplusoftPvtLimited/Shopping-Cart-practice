@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+import '../../controller/cart_controller.dart';
 
 class CartFood extends StatefulWidget {
   const CartFood({super.key});
@@ -9,23 +12,10 @@ class CartFood extends StatefulWidget {
 }
 
 class _CartFoodState extends State<CartFood> {
-  List<String> foodIcons = [
-    'https://img.icons8.com/fluency/1x/hamburger.png',
-    'https://img.icons8.com/fluency/1x/sunny-side-up-eggs.png',
-    'https://img.icons8.com/fluency/1x/citrus.png',
-  ];
-   List<String> foodData = [
-    'Burger',
-    'Egg',
-    'Orange',
-  ];
-  List<String> foodPrice = [
-    '\$24.00',
-    '\$20.20',
-    '\$26.30',
-  ];
+ 
   @override
   Widget build(BuildContext context) {
+     var cartProvider = Provider.of<CartController>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: Color.fromARGB(208, 255, 255, 255),
@@ -75,9 +65,10 @@ class _CartFoodState extends State<CartFood> {
 
                 Container(
                   height: 300,
+                  
                   child: ListView.builder(
                     
-                    itemCount: foodIcons.length,
+                    itemCount: cartProvider.products.length,
                     itemBuilder: (BuildContext context,index) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -86,13 +77,13 @@ class _CartFoodState extends State<CartFood> {
                             decoration:const BoxDecoration(
                               //color: Colors.white,
                             ),
-                            child: Image.network(foodIcons[index],height: 100,)),
+                            child: Image.asset(cartProvider.products[index].images,height: 100,width: 100,)),
                           Container(
                             child: Column(
                               children: [
-                               Text( foodData[index],style: GoogleFonts.montserrat(color: Colors.black,fontSize: 20,),),
+                               Text( cartProvider.products[index].title,style: GoogleFonts.montserrat(color: Colors.black,fontSize: 20,),),
                                SizedBox(height: 10,),
-                               Text( foodPrice[index],style: GoogleFonts.montserrat(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),),
+                               Text( cartProvider.products[index].price,style: GoogleFonts.montserrat(color: Colors.black,fontSize: 20,fontWeight: FontWeight.bold),),
                               ],
                             ),
                           ),
@@ -109,12 +100,21 @@ class _CartFoodState extends State<CartFood> {
                                         border: Border.all(color: Colors.black45),
                                       ),
                                       
-                                      child: Icon(Icons.remove,size: 35,color: Colors.black,)
+                                      child: InkWell(
+                                        onTap: () {
+                                          cartProvider.removeQty(index);
+                                        },
+                                        child: Icon(Icons.remove,size: 35,color: Colors.black,))
                                       ),
                                       SizedBox(width: 20,),
-                                      Text('1',style: GoogleFonts.montserrat(color: Colors.black,fontSize: 26,fontWeight: FontWeight.bold),),
+                                      Text(cartProvider.products[index].qty
+                                            .toString(),style: GoogleFonts.montserrat(color: Colors.black,fontSize: 26,fontWeight: FontWeight.bold),),
                                       SizedBox(width: 20,),
-                                     Icon(Icons.add,size: 35,color: Colors.black,),
+                                      InkWell(
+                                        onTap: (){
+                                          cartProvider.addQty(index);
+                                        },
+                                        child: Icon(Icons.add,size: 35,color: Colors.black,)),
                          
                         ],
                       ),
@@ -184,7 +184,7 @@ class _CartFoodState extends State<CartFood> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Item total',style: GoogleFonts.montserrat(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
-                Text('\$70.50',style: GoogleFonts.montserrat(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
+                Text(cartProvider.totalPrice.toString(),style: GoogleFonts.montserrat(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
               ],
              ),
                 const SizedBox(height: 25,),
